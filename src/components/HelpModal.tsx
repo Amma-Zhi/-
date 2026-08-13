@@ -12,17 +12,18 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-xl bg-gradient-to-b from-white via-pink-50 to-rose-100 rounded-3xl p-6 border-4 border-pink-300 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto relative text-left"
+        className="w-full max-w-xl bg-gradient-to-b from-white via-pink-50 to-rose-100 rounded-3xl p-6 border-4 border-pink-300 shadow-2xl flex flex-col gap-4 max-h-[90vh] relative text-left overflow-hidden"
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1"
+          className="absolute top-4 right-4 z-30 text-slate-400 hover:text-slate-600 p-1.5 rounded-full bg-white/80 backdrop-blur-xs hover:bg-pink-100 transition-colors shadow-xs cursor-pointer"
+          title="关闭"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Title */}
-        <div className="flex items-center gap-2 border-b-2 border-pink-200 pb-3">
+        <div className="flex items-center gap-2 border-b-2 border-pink-200 pb-3 pr-8 shrink-0">
           <div className="w-10 h-10 rounded-2xl bg-sky-400 text-white flex items-center justify-center shadow-md">
             <HelpCircle className="w-6 h-6" />
           </div>
@@ -33,7 +34,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
         </div>
 
         {/* Sections */}
-        <div className="flex flex-col gap-3 text-xs text-slate-700 leading-relaxed overflow-y-auto max-h-[65vh] pr-1">
+        <div className="flex-1 flex flex-col gap-3 text-xs text-slate-700 leading-relaxed overflow-y-auto pr-1">
           {/* Rule 1: Formula */}
           <div className="bg-white p-3.5 rounded-2xl border border-pink-200 shadow-xs flex flex-col gap-1.5">
             <div className="font-extrabold text-sm text-rose-600 flex items-center gap-1">
@@ -75,7 +76,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({ onClose }) => {
             <p>
               • 每关包含小盲注、大盲注和 Boss 盲注。Boss 盲注拥有特殊限制（如禁用某些花色）。
               <br />
-              • 每局结束后，未使用的出牌次数与手中现金均可产生额外零花钱与利息（每 $5 获得 $1 利息）。
+              • 每局结束后，未使用的出牌次数与手中现金均可产生额外零花钱与利息（每 🪙5 获得 🪙1 利息）。
             </p>
           </div>
         </div>

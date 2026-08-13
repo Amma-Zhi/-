@@ -36,24 +36,25 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-2xl bg-gradient-to-b from-white via-pink-50 to-rose-100 rounded-3xl p-4 sm:p-6 border-4 border-pink-300 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto relative"
+        className="w-full max-w-2xl bg-gradient-to-b from-white via-pink-50 to-rose-100 rounded-3xl p-4 sm:p-6 border-4 border-pink-300 shadow-2xl flex flex-col gap-4 max-h-[90vh] relative overflow-hidden"
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1"
+          className="absolute top-4 right-4 z-30 text-slate-400 hover:text-slate-600 p-1.5 rounded-full bg-white/80 backdrop-blur-xs hover:bg-pink-100 transition-colors shadow-xs cursor-pointer"
+          title="关闭"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Header Tabs */}
-        <div className="flex items-center justify-between border-b-2 border-pink-200 pb-3">
+        <div className="flex items-center justify-between border-b-2 border-pink-200 pb-3 pr-10 shrink-0">
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
                 soundEngine.playPop();
                 setActiveTab('achievements');
               }}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition-all ${
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition-all ${
                 activeTab === 'achievements'
                   ? 'bg-rose-500 text-white shadow-md'
                   : 'bg-white text-slate-600 border border-pink-200 hover:bg-pink-100'
@@ -68,7 +69,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
                 soundEngine.playPop();
                 setActiveTab('shop');
               }}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition-all ${
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-2xl font-extrabold text-xs sm:text-sm transition-all ${
                 activeTab === 'shop'
                   ? 'bg-rose-500 text-white shadow-md'
                   : 'bg-white text-slate-600 border border-pink-200 hover:bg-pink-100'
@@ -86,9 +87,10 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
           </div>
         </div>
 
-        {/* TAB 1: ACHIEVEMENTS */}
-        {activeTab === 'achievements' && (
-          <div className="flex flex-col gap-3 overflow-y-auto max-h-[60vh] pr-1">
+        <div className="flex-1 overflow-y-auto pr-1">
+          {/* TAB 1: ACHIEVEMENTS */}
+          {activeTab === 'achievements' && (
+            <div className="flex flex-col gap-3">
             {achievements.map((ach) => (
               <div
                 key={ach.id}
@@ -193,6 +195,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
             </div>
           </div>
         )}
+        </div>
       </motion.div>
     </div>
   );

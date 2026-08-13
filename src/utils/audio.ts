@@ -137,6 +137,113 @@ class SoundEngine {
     }
   }
 
+  // Crisp "Pop & Sparkle" sound for card evaluation step
+  public playCardScorePop(stepIndex: number = 0) {
+    if (this.isMuted || !this.sfxEnabled) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    try {
+      const now = this.ctx.currentTime;
+
+      // 1. Core punchy pop ("砰")
+      const popOsc = this.ctx.createOscillator();
+      const popGain = this.ctx.createGain();
+
+      const basePopFreq = 350 + (stepIndex % 8) * 60;
+      popOsc.type = 'sine';
+      popOsc.frequency.setValueAtTime(basePopFreq, now);
+      popOsc.frequency.exponentialRampToValueAtTime(basePopFreq * 2.2, now + 0.06);
+
+      popGain.gain.setValueAtTime(0.22, now);
+      popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+      popOsc.connect(popGain);
+      popGain.connect(this.ctx.destination);
+
+      popOsc.start(now);
+      popOsc.stop(now + 0.08);
+
+      // 2. High sparkle sheen tone ("闪烁")
+      const sparkleOsc = this.ctx.createOscillator();
+      const sparkleGain = this.ctx.createGain();
+
+      const sparkleFreq = 1500 + (stepIndex % 8) * 180;
+      sparkleOsc.type = 'triangle';
+      sparkleOsc.frequency.setValueAtTime(sparkleFreq, now + 0.02);
+      sparkleOsc.frequency.exponentialRampToValueAtTime(sparkleFreq * 1.3, now + 0.1);
+
+      sparkleGain.gain.setValueAtTime(0.12, now + 0.02);
+      sparkleGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+      sparkleOsc.connect(sparkleGain);
+      sparkleGain.connect(this.ctx.destination);
+
+      sparkleOsc.start(now + 0.02);
+      sparkleOsc.stop(now + 0.12);
+    } catch {
+      // Ignore
+    }
+  }
+
+  // Grand crisp reward chime when hand calculation completes
+  public playFinalRewardChime() {
+    if (this.isMuted || !this.sfxEnabled) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      // C major 9 arpeggio: C5, E5, G5, B5, C6, E6
+      const arpeggio = [523.25, 659.25, 783.99, 987.77, 1046.50, 1318.51];
+
+      // 1. Rapid sparkling arpeggio cascade
+      arpeggio.forEach((freq, idx) => {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        const delay = idx * 0.05;
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + delay);
+
+        gain.gain.setValueAtTime(0.18, now + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.25);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now + delay);
+        osc.stop(now + delay + 0.25);
+      });
+
+      // 2. High resonant crystal bell finish
+      const bellDelay = arpeggio.length * 0.05 + 0.02;
+      const bellFreqs = [1046.50, 2093.00]; // C6 & C7 octave pair
+
+      bellFreqs.forEach((freq, i) => {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + bellDelay);
+
+        const vol = i === 0 ? 0.22 : 0.12;
+        gain.gain.setValueAtTime(vol, now + bellDelay);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + bellDelay + 0.5);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now + bellDelay);
+        osc.stop(now + bellDelay + 0.5);
+      });
+    } catch {
+      // Ignore
+    }
+  }
+
   // Coin kaching sound
   public playCoin() {
     if (this.isMuted || !this.sfxEnabled) return;

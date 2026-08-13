@@ -108,6 +108,9 @@ export interface BossRule {
   name: string;
   description: string;
   icon: string;
+  bannedHandTypes?: HandType[];
+  disabledJokerIndices?: number[];
+  disableDiscards?: boolean;
 }
 
 export interface BlindInfo {

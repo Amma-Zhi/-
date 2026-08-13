@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Settings, X, Volume2, VolumeX, Music, Sparkles, Check, Play } from 'lucide-react';
+import { Settings, X, Volume2, VolumeX, Music, Sparkles, Check, Play, RotateCcw, AlertTriangle } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 
 interface SettingsModalProps {
@@ -8,6 +8,7 @@ interface SettingsModalProps {
   bgmVolume: number; // 0 to 100
   onToggleSfx: (enabled: boolean) => void;
   onChangeBgmVolume: (volume: number) => void;
+  onResetGame?: () => void;
   onClose: () => void;
 }
 
@@ -16,10 +17,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   bgmVolume,
   onToggleSfx,
   onChangeBgmVolume,
+  onResetGame,
   onClose,
 }) => {
+  const [showConfirmReset, setShowConfirmReset] = useState(false);
+
   const handleTestSfx = () => {
     soundEngine.playCoin();
+  };
+
+  const handleConfirmReset = () => {
+    if (onResetGame) {
+      soundEngine.playPop();
+      onResetGame();
+      onClose();
+    }
   };
 
   return (
@@ -28,19 +40,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="w-full max-w-md bg-gradient-to-b from-white via-pink-50 to-rose-100 rounded-3xl p-6 border-4 border-pink-300 shadow-2xl flex flex-col gap-5 relative text-left"
+        className="w-full max-w-md bg-gradient-to-b from-white via-pink-50 to-rose-100 rounded-3xl p-6 border-4 border-pink-300 shadow-2xl flex flex-col gap-5 max-h-[90vh] relative text-left overflow-hidden"
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-pink-100 transition-colors cursor-pointer"
+          className="absolute top-4 right-4 z-30 text-slate-400 hover:text-slate-600 p-1.5 rounded-full bg-white/80 backdrop-blur-xs shadow-xs hover:bg-pink-100 transition-colors cursor-pointer"
           title="关闭设置"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
-        <div className="flex items-center gap-2.5 border-b-2 border-pink-200 pb-3">
+        <div className="flex items-center gap-2.5 border-b-2 border-pink-200 pb-3 pr-8 shrink-0">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-400 to-rose-400 text-white flex items-center justify-center shadow-md">
             <Settings className="w-5 h-5" />
           </div>
@@ -54,7 +66,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* Settings Form */}
-        <div className="flex flex-col gap-4 text-xs">
+        <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 text-xs">
           {/* Item 1: Sound Effects Toggle */}
           <div className="bg-white p-4 rounded-2xl border-2 border-pink-200 shadow-2xs flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -138,6 +150,52 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Item 3: Reset All Levels Option */}
+          <div className="bg-rose-50/80 p-3.5 rounded-2xl border-2 border-rose-200 shadow-2xs flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center shadow-xs">
+                  <RotateCcw className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-extrabold text-xs text-rose-900">重置所有关卡</span>
+                  <span className="text-[10px] text-rose-600">重置当前对局进度，从 Ante 1 重新开始</span>
+                </div>
+              </div>
+
+              {!showConfirmReset ? (
+                <button
+                  onClick={() => setShowConfirmReset(true)}
+                  className="px-3 py-1.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-xs shadow-xs transition-colors cursor-pointer"
+                >
+                  重置对局
+                </button>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={handleConfirmReset}
+                    className="px-3 py-1 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-xs transition-colors cursor-pointer"
+                  >
+                    确认重置
+                  </button>
+                  <button
+                    onClick={() => setShowConfirmReset(false)}
+                    className="px-2 py-1 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    取消
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {showConfirmReset && (
+              <p className="text-[10px] text-rose-700 font-bold bg-white/80 p-2 rounded-xl border border-rose-200 flex items-center gap-1">
+                <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                <span>这将会清除当前对局的得分、金币和小丑卡牌，并从第 1 关开始！</span>
+              </p>
+            )}
           </div>
 
           {/* Test Sound Button & Auto-Save Note */}

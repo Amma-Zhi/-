@@ -34,7 +34,7 @@ export const JOKERS_LIST: JokerData[] = [
   {
     id: 'joker_bunny',
     name: '魔法兔兔',
-    description: '每次弃牌时恢复 $1 零花钱，且弃牌上限 +1',
+    description: '每次弃牌时恢复 🪙1 零花钱，且弃牌上限 +1',
     rarity: '罕见',
     cost: 6,
     icon: 'Rabbit',
@@ -54,7 +54,7 @@ export const JOKERS_LIST: JokerData[] = [
   {
     id: 'joker_piggy',
     name: '金币猪猪',
-    description: '每拥有 $5 现金，结算时获得 +3 倍率 (上限 +30)',
+    description: '每拥有 🪙5 现金，结算时获得 +3 倍率 (上限 +30)',
     rarity: '普通',
     cost: 5,
     icon: 'Coins',
@@ -164,7 +164,7 @@ export const JOKERS_LIST: JokerData[] = [
   {
     id: 'joker_king_pudding',
     name: '布丁国王',
-    description: '如果打出的牌包含【K】，获得 +15 倍率与 +$2 零花钱',
+    description: '如果打出的牌包含【K】，获得 +15 倍率与 +🪙2 零花钱',
     rarity: '罕见',
     cost: 7,
     icon: 'Crown',

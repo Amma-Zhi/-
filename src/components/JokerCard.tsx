@@ -79,7 +79,7 @@ export const JokerCard: React.FC<JokerCardProps> = ({
           <div className="flex items-center gap-1">
             {price !== undefined && (
               <span className="bg-amber-400 text-amber-950 font-black text-xs px-1.5 py-0.5 rounded-full shadow-xs flex items-center gap-0.5">
-                ${price}
+                🪙{price}
               </span>
             )}
             <button
@@ -128,7 +128,7 @@ export const JokerCard: React.FC<JokerCardProps> = ({
             }}
             className="w-full bg-[#FF85A1] hover:bg-[#FF6392] text-white font-bold text-[10px] py-0.5 rounded-lg transition-colors shadow-xs border-b-2 border-[#E0607E]"
           >
-            出售 (${Math.max(1, Math.floor(item.cost / 2))})
+            出售 (🪙{Math.max(1, Math.floor(item.cost / 2))})
           </button>
         )}
       </motion.div>
@@ -209,7 +209,7 @@ export const JokerCard: React.FC<JokerCardProps> = ({
                     }}
                     className="flex-1 bg-[#FF85A1] hover:bg-[#FF6392] text-white font-bold text-xs py-2.5 rounded-xl transition-all shadow-xs border-b-2 border-[#E0607E] cursor-pointer"
                   >
-                    出售 (${Math.max(1, Math.floor(item.cost / 2))})
+                    出售 (🪙{Math.max(1, Math.floor(item.cost / 2))})
                   </button>
                 )}
 
@@ -238,7 +238,7 @@ export const JokerCard: React.FC<JokerCardProps> = ({
                         : 'bg-[#FF6392] hover:bg-[#E0607E] text-white border-[#E0607E] cursor-pointer'
                     }`}
                   >
-                    购买 (${price ?? item.cost})
+                    购买 (🪙{price ?? item.cost})
                   </button>
                 )}
 

@@ -49,7 +49,7 @@ export const TAROT_CARDS: TarotCardData[] = [
   {
     id: 'tarot_gold',
     name: '金币糖果',
-    description: '将最多 2 张牌升级为【黄金牌】(手牌保留时每局 +$3)',
+    description: '将最多 2 张牌升级为【黄金牌】(手牌保留时每局 +🪙3)',
     cost: 4,
     icon: 'Coins',
     effect: 'enhancement',
@@ -110,7 +110,7 @@ export const TAROT_CARDS: TarotCardData[] = [
   {
     id: 'tarot_money',
     name: '聚宝盆',
-    description: '立即获得 $15 零花钱',
+    description: '立即获得 🪙15 零花钱',
     cost: 4,
     icon: 'PiggyBank',
     effect: 'money',
@@ -182,7 +182,7 @@ export const VOUCHERS: VoucherData[] = [
   {
     id: 'voucher_reroll',
     name: '幸运转盘',
-    description: '商店刷新费用降低 $1',
+    description: '商店刷新费用降低 🪙1',
     cost: 8,
     icon: 'RotateCw',
     bought: false,
@@ -203,4 +203,15 @@ export const BOSS_RULES: BossRule[] = [
   { id: 'boss_discards', name: '甜甜圈考验', description: '本局只能弃牌 1 次', icon: 'Ban' },
   { id: 'boss_debuff_face', name: '面具舞会', description: '所有人头牌 (J, Q, K) 保持翻面状态', icon: 'Mask' },
   { id: 'boss_mult_reduce', name: '减速冰块', description: '所有打出的手牌基础倍率 -2', icon: 'Snowflake' },
+  { id: 'boss_ban_pair', name: '禁出对子', description: '【禁出牌型】打出【对子】或【两对】无效，得 0 分！', icon: 'Ban', bannedHandTypes: ['对子', '两对'] },
+  { id: 'boss_disable_joker_1', name: '首卡失灵', description: '【小丑失效】最左侧的 1 张小丑牌在本关完全失效！', icon: 'Lock', disabledJokerIndices: [0] },
 ];
+
+export const HARD_MODE_BOSS_RULES: BossRule[] = [
+  { id: 'hard_ban_flush', name: '同花禁咒', description: '【高难度限定】禁止打出【同花】与【顺子】（得 0 分）！', icon: 'Flame', bannedHandTypes: ['同花', '顺子', '同花顺', '皇家同花顺'] },
+  { id: 'hard_disable_2_jokers', name: '双重卡封', description: '【高难度限定】第 1 与第 2 张小丑牌在本关完全失效！', icon: 'Lock', disabledJokerIndices: [0, 1] },
+  { id: 'hard_ban_pair_three', name: '高牌试炼', description: '【高难度限定】禁止打出【对子】与【三条】（得 0 分）！', icon: 'ShieldAlert', bannedHandTypes: ['对子', '两对', '三条'] },
+  { id: 'hard_no_discards', name: '严苛考验', description: '【高难度限定】本关禁用任何弃牌！', icon: 'Ban', disableDiscards: true },
+  { id: 'hard_disable_last_joker', name: '末卡印封', description: '【高难度限定】最右侧小丑牌失效，且手牌基础倍率减半！', icon: 'Lock', disabledJokerIndices: [2] },
+];
+

@@ -245,7 +245,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
 
           {/* Bottom Navigation Grid */}
-          <div className="bg-white p-1.5 border-t border-[#FFD1DC] rounded-b-2xl grid grid-cols-5 gap-1 text-center shadow-xs">
+          <div className="bg-white p-1.5 border-t border-[#FFD1DC] rounded-b-2xl grid grid-cols-4 gap-1 text-center shadow-xs">
             <button
               onClick={() => setActiveTab('home')}
               className={`flex flex-col items-center gap-0.5 py-1 rounded-xl cursor-pointer ${
@@ -293,19 +293,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             >
               <Trophy className="w-4 h-4" />
               <span className="text-[10px]">成就</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setActiveTab('friends');
-                onOpenAchievements();
-              }}
-              className={`flex flex-col items-center gap-0.5 py-1 rounded-xl cursor-pointer ${
-                activeTab === 'friends' ? 'text-[#FF6392] font-black' : 'text-slate-400 font-bold'
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              <span className="text-[10px]">好友</span>
             </button>
           </div>
         </div>

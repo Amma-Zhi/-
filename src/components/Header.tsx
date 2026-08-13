@@ -79,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
           {/* Money */}
           <div className="flex items-center gap-1 bg-amber-100 text-amber-900 font-black px-2.5 py-1 rounded-xl border border-amber-300">
             <Coins className="w-3.5 h-3.5 text-amber-600 fill-amber-300" />
-            <span>${money}</span>
+            <span>🪙 {money}</span>
           </div>
 
           {/* Deck View */}

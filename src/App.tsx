@@ -127,6 +127,12 @@ export default function App() {
   const [shopConsumables, setShopConsumables] = useState<(TarotCardData | PlanetCardData)[]>([]);
   const [shopPacks, setShopPacks] = useState<BoosterPackData[]>([]);
   const [shopVouchers, setShopVouchers] = useState<VoucherData[]>([]);
+  const [lastEarningsBreakdown, setLastEarningsBreakdown] = useState<{
+    base: number;
+    hands: number;
+    interest: number;
+    total: number;
+  } | null>(null);
 
   // Initialize on mount
   useEffect(() => {
@@ -169,13 +175,13 @@ export default function App() {
     setAnte(save.ante);
     setRound(save.round);
     setBlindType(save.blindType);
-    setMoney(save.money || 12580);
+    setMoney(save.money ?? 10);
     setHandsLeft(save.handsLeft);
     setDiscardsLeft(save.discardsLeft);
     setHandSize(save.handSize || 8);
-    setCurrentScore(save.currentScore || 24860);
-    setTargetScore(save.targetScore || 30000);
-    setJokers(save.jokers || JOKERS_LIST.slice(0, 3));
+    setCurrentScore(save.currentScore || 0);
+    setTargetScore(save.targetScore || getTargetScoreForBlind(save.ante, save.blindType));
+    setJokers(save.jokers || []);
     setConsumables(save.consumables || []);
     setHandLevels(save.handLevels || INITIAL_HAND_LEVELS);
     setDeck(save.deck || []);
@@ -195,8 +201,8 @@ export default function App() {
     const initialHand = freshDeck.slice(0, 8);
     const drawPile = freshDeck.slice(8);
 
-    let startMoney = 12580; // Matching image initial gold
-    let initialJokers: JokerData[] = JOKERS_LIST.slice(0, 3);
+    let startMoney = 10; // Standard starting gold matching shop pricing
+    let initialJokers: JokerData[] = [];
 
     if (customDailyDate) {
       const dailyConfig = getDailyChallengeConfig(new Date(customDailyDate));
@@ -208,15 +214,15 @@ export default function App() {
       setDailyDate('');
     }
 
-    setAnte(2);
-    setRound(5);
+    setAnte(1);
+    setRound(1);
     setBlindType('small');
     setMoney(startMoney);
     setHandsLeft(4);
     setDiscardsLeft(3);
     setHandSize(8);
-    setCurrentScore(24860);
-    setTargetScore(30000);
+    setCurrentScore(0);
+    setTargetScore(getTargetScoreForBlind(1, 'small'));
     setJokers(initialJokers);
     setConsumables([]);
     setHandLevels(INITIAL_HAND_LEVELS);
@@ -226,6 +232,7 @@ export default function App() {
     setSelectedCardIds([]);
     setBossRule(undefined);
     setVouchers([]);
+    setLastEarningsBreakdown(null);
     setScreenState('playing');
 
     saveGameRun(null);
@@ -326,9 +333,17 @@ export default function App() {
     }
 
     if (newScore >= targetScore) {
-      const blindReward = blindType === 'boss' ? 8 : blindType === 'big' ? 5 : 3;
+      const baseReward = blindType === 'boss' ? (8 + ante * 2) : blindType === 'big' ? (5 + ante) : (3 + ante);
       const interest = Math.min(5, Math.floor(money / 5));
-      const totalEarned = blindReward + interest + newHandsLeft;
+      const handsReward = newHandsLeft;
+      const totalEarned = baseReward + handsReward + interest;
+
+      setLastEarningsBreakdown({
+        base: baseReward,
+        hands: handsReward,
+        interest,
+        total: totalEarned,
+      });
 
       setMoney(prev => prev + totalEarned);
       populateShop();
@@ -548,6 +563,7 @@ export default function App() {
                 jokers={jokers}
                 deckCount={deck.length || 24}
                 evaluatedHand={currentEvaluatedHand}
+                bossRule={bossRule || undefined}
                 onToggleSelectCard={handleToggleSelectCard}
                 onPlayHand={handlePlayHand}
                 onDiscard={handleDiscard}
@@ -576,8 +592,11 @@ export default function App() {
           handEval={activeScoring.handEval}
           playedCards={activeScoring.playedCards}
           jokers={jokers}
+          bossRule={bossRule || undefined}
           onScoringComplete={handleScoringComplete}
           cardBack={activeCardBack}
+          currentScore={currentScore}
+          targetScore={targetScore}
         />
       )}
 
@@ -625,7 +644,9 @@ export default function App() {
             populateShop();
           }}
           onNextRound={handleNextRoundFromShop}
+          onClose={() => setScreenState('playing')}
           handLevels={handLevels}
+          lastEarningsBreakdown={lastEarningsBreakdown || undefined}
         />
       )}
 
@@ -717,6 +738,7 @@ export default function App() {
           bgmVolume={bgmVolume}
           onToggleSfx={handleToggleSfx}
           onChangeBgmVolume={handleChangeBgmVolume}
+          onResetGame={() => startNewRun()}
           onClose={() => setShowSettingsModal(false)}
         />
       )}
