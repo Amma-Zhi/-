@@ -12,6 +12,7 @@ import {
   TarotCardData,
   VoucherData,
   GameSaveState,
+  GameStats,
 } from './types';
 import {
   createStandardDeck,
@@ -33,6 +34,8 @@ import {
   INITIAL_REDEEM_ITEMS,
 } from './data/achievements';
 import {
+  clearAllGameData,
+  defaultStats,
   loadAchievements,
   loadAudioSettings,
   loadCrystals,
@@ -44,6 +47,7 @@ import {
   saveCrystals,
   saveGameRun,
   saveGameStats,
+  saveRedeemItems,
 } from './utils/storage';
 import { soundEngine } from './utils/audio';
 
@@ -72,12 +76,12 @@ export default function App() {
   const [orientation, setOrientation] = useState<'landscape' | 'portrait'>('landscape');
 
   // Game Run State
-  const [ante, setAnte] = useState<number>(2);
-  const [round, setRound] = useState<number>(5);
+  const [ante, setAnte] = useState<number>(1);
+  const [round, setRound] = useState<number>(1);
   const [blindType, setBlindType] = useState<BlindType>('small');
-  const [currentScore, setCurrentScore] = useState<number>(24860);
-  const [targetScore, setTargetScore] = useState<number>(30000);
-  const [money, setMoney] = useState<number>(12580);
+  const [currentScore, setCurrentScore] = useState<number>(0);
+  const [targetScore, setTargetScore] = useState<number>(300);
+  const [money, setMoney] = useState<number>(10);
   const [handsLeft, setHandsLeft] = useState<number>(4);
   const [discardsLeft, setDiscardsLeft] = useState<number>(3);
   const [handSize, setHandSize] = useState<number>(8);
@@ -97,9 +101,10 @@ export default function App() {
   const [dailyDate, setDailyDate] = useState<string>('');
 
   // Unlockables & Settings State
-  const [crystals, setCrystals] = useState<number>(50);
+  const [crystals, setCrystals] = useState<number>(0);
   const [achievements, setAchievements] = useState(INITIAL_ACHIEVEMENTS);
   const [redeemItems, setRedeemItems] = useState(INITIAL_REDEEM_ITEMS);
+  const [gameStats, setGameStats] = useState<GameStats>(defaultStats);
   const [activeCardBack, setActiveCardBack] = useState<string>('card_back_sakura');
   const [activeDeckSkin, setActiveDeckSkin] = useState<string>('deck_default');
 
@@ -144,6 +149,9 @@ export default function App() {
 
     const savedRedeems = loadRedeemItems();
     setRedeemItems(savedRedeems);
+
+    const savedStats = loadGameStats();
+    setGameStats(savedStats);
 
     const audioSettings = loadAudioSettings();
     setSfxEnabled(audioSettings.sfxEnabled);
@@ -521,7 +529,7 @@ export default function App() {
             >
               <HomeScreen
                 money={money}
-                streak={5}
+                streak={gameStats.totalWins}
                 deckCount={24}
                 maxDeckCount={52}
                 activeTab={activeTab}
@@ -538,6 +546,7 @@ export default function App() {
                 onOpenAchievements={() => setShowAchievementsModal(true)}
                 onOpenSettings={() => setShowSettingsModal(true)}
                 orientation={orientation}
+                stats={gameStats}
               />
             </motion.div>
           ) : (
@@ -708,17 +717,31 @@ export default function App() {
           crystals={crystals}
           activeCardBack={activeCardBack}
           activeDeckSkin={activeDeckSkin}
+          stats={gameStats}
           onClaimAchievement={(achId, reward) => {
-            setCrystals(prev => prev + reward);
-            setAchievements(prev =>
-              prev.map(a => (a.id === achId ? { ...a, unlocked: true } : a))
-            );
+            setCrystals(prev => {
+              const next = prev + reward;
+              saveCrystals(next);
+              return next;
+            });
+            setAchievements(prev => {
+              const next = prev.map(a => (a.id === achId ? { ...a, unlocked: true } : a));
+              saveAchievements(next);
+              return next;
+            });
           }}
           onRedeemItem={(item) => {
-            setCrystals(prev => prev - item.price);
-            setRedeemItems(prev =>
-              prev.map(r => (r.id === item.id ? { ...r, rounded: true } : r))
-            );
+            if (crystals < item.price) return;
+            setCrystals(prev => {
+              const next = prev - item.price;
+              saveCrystals(next);
+              return next;
+            });
+            setRedeemItems(prev => {
+              const next = prev.map(r => (r.id === item.id ? { ...r, unlocked: true } : r));
+              saveRedeemItems(next);
+              return next;
+            });
             if (item.type === 'card_back') setActiveCardBack(item.id);
             if (item.type === 'deck_skin') setActiveDeckSkin(item.id);
           }}
@@ -739,6 +762,16 @@ export default function App() {
           onToggleSfx={handleToggleSfx}
           onChangeBgmVolume={handleChangeBgmVolume}
           onResetGame={() => startNewRun()}
+          onResetAllData={() => {
+            clearAllGameData();
+            setCrystals(0);
+            setGameStats(defaultStats);
+            setAchievements(INITIAL_ACHIEVEMENTS);
+            setRedeemItems(INITIAL_REDEEM_ITEMS);
+            setActiveCardBack('card_back_sakura');
+            setActiveDeckSkin('deck_default');
+            startNewRun();
+          }}
           onClose={() => setShowSettingsModal(false)}
         />
       )}

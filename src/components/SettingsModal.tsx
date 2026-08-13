@@ -9,6 +9,7 @@ interface SettingsModalProps {
   onToggleSfx: (enabled: boolean) => void;
   onChangeBgmVolume: (volume: number) => void;
   onResetGame?: () => void;
+  onResetAllData?: () => void;
   onClose: () => void;
 }
 
@@ -18,9 +19,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onToggleSfx,
   onChangeBgmVolume,
   onResetGame,
+  onResetAllData,
   onClose,
 }) => {
   const [showConfirmReset, setShowConfirmReset] = useState(false);
+  const [showConfirmAllReset, setShowConfirmAllReset] = useState(false);
 
   const handleTestSfx = () => {
     soundEngine.playCoin();
@@ -30,6 +33,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     if (onResetGame) {
       soundEngine.playPop();
       onResetGame();
+      onClose();
+    }
+  };
+
+  const handleConfirmAllReset = () => {
+    if (onResetAllData) {
+      soundEngine.playPop();
+      onResetAllData();
       onClose();
     }
   };
@@ -152,7 +163,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
-          {/* Item 3: Reset All Levels Option */}
+          {/* Item 3: Reset Current Run */}
           <div className="bg-rose-50/80 p-3.5 rounded-2xl border-2 border-rose-200 shadow-2xs flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -160,7 +171,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <RotateCcw className="w-4 h-4" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-extrabold text-xs text-rose-900">重置所有关卡</span>
+                  <span className="font-extrabold text-xs text-rose-900">重置当前对局</span>
                   <span className="text-[10px] text-rose-600">重置当前对局进度，从 Ante 1 重新开始</span>
                 </div>
               </div>
@@ -194,6 +205,52 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <p className="text-[10px] text-rose-700 font-bold bg-white/80 p-2 rounded-xl border border-rose-200 flex items-center gap-1">
                 <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                 <span>这将会清除当前对局的得分、金币和小丑卡牌，并从第 1 关开始！</span>
+              </p>
+            )}
+          </div>
+
+          {/* Item 4: Full Global Data Reset (Level 1, 0 Crystals, 0 Achievements) */}
+          <div className="bg-red-100/90 p-3.5 rounded-2xl border-2 border-red-300 shadow-2xs flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-xs">
+                  <AlertTriangle className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-extrabold text-xs text-red-950">重置所有存档与数据</span>
+                  <span className="text-[10px] text-red-700">重置等级/经验为 Lv.1 0%，草莓水晶为 0，成就全部归零</span>
+                </div>
+              </div>
+
+              {!showConfirmAllReset ? (
+                <button
+                  onClick={() => setShowConfirmAllReset(true)}
+                  className="px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs shadow-xs transition-colors cursor-pointer"
+                >
+                  重置全部
+                </button>
+              ) : (
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={handleConfirmAllReset}
+                    className="px-3 py-1 rounded-xl bg-red-700 hover:bg-red-800 text-white font-black text-xs shadow-xs transition-colors cursor-pointer"
+                  >
+                    确认清空
+                  </button>
+                  <button
+                    onClick={() => setShowConfirmAllReset(false)}
+                    className="px-2 py-1 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
+                  >
+                    取消
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {showConfirmAllReset && (
+              <p className="text-[10px] text-red-800 font-bold bg-white/90 p-2 rounded-xl border border-red-300 flex items-center gap-1">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                <span>注意：将清除所有积累的等级经验、水晶、成就、解锁样式以及历史战绩并完全归零！</span>
               </p>
             )}
           </div>

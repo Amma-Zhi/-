@@ -97,15 +97,27 @@ export function saveGameStats(stats: GameStats): void {
 export function loadCrystals(): number {
   try {
     const raw = localStorage.getItem(KEYS.CRYSTALS);
-    if (!raw) return 50; // Welcome starting crystals!
-    return parseInt(raw, 10) || 50;
+    if (!raw) return 0;
+    return parseInt(raw, 10) || 0;
   } catch {
-    return 50;
+    return 0;
   }
 }
 
 export function saveCrystals(amount: number): void {
   localStorage.setItem(KEYS.CRYSTALS, amount.toString());
+}
+
+export function clearAllGameData(): void {
+  try {
+    localStorage.removeItem(KEYS.SAVE_RUN);
+    localStorage.removeItem(KEYS.STATS);
+    localStorage.removeItem(KEYS.ACHIEVEMENTS);
+    localStorage.removeItem(KEYS.REDEEM_ITEMS);
+    localStorage.removeItem(KEYS.CRYSTALS);
+  } catch {
+    // Ignore storage errors
+  }
 }
 
 export function loadAchievements(): Achievement[] {

@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Mail, Settings, ChevronRight, BookOpen, ShoppingBag, ClipboardList, Heart, Home, Layers, Swords, Trophy, Users } from 'lucide-react';
 
+import { GameStats } from '../types';
+
 interface HomeScreenProps {
   onStartBattle: () => void;
   onOpenShop: () => void;
@@ -15,6 +17,7 @@ interface HomeScreenProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   orientation?: 'portrait' | 'landscape';
+  stats?: GameStats;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -24,14 +27,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onOpenAchievements,
   onOpenSettings,
   money,
-  streak = 5,
+  streak = 0,
   deckCount = 8,
   maxDeckCount = 12,
   activeTab,
   setActiveTab,
   orientation = 'landscape',
+  stats,
 }) => {
   const isLandscape = orientation === 'landscape';
+
+  const totalXp = stats
+    ? (stats.totalGamesPlayed * 20) + (stats.totalWins * 50) + (stats.dailyChallengesCompleted * 30) + Math.floor(stats.totalMoneyEarned / 2)
+    : 0;
+  const level = Math.floor(totalXp / 100) + 1;
+  const expPercent = totalXp % 100;
 
   return (
     <div
@@ -53,7 +63,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <div className="w-10 h-10 rounded-full bg-[#FFF0F3] border-2 border-[#FFB6C1] flex items-center justify-center text-xl shadow-xs relative">
               🤡
               <span className="absolute -bottom-1 -right-1 bg-[#FF6392] text-white text-[8px] font-black px-1 rounded-full border border-white">
-                Lv.18
+                Lv.{level}
               </span>
             </div>
             <div className="flex flex-col">
@@ -61,8 +71,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 甜心小丑 <span className="text-[10px]">🎀</span>
               </span>
               {/* EXP Bar */}
-              <div className="w-20 h-1.5 bg-[#FFD1DC] rounded-full overflow-hidden border border-white mt-0.5">
-                <div className="h-full bg-[#FF6392] rounded-full w-[65%]" />
+              <div className="w-20 h-1.5 bg-[#FFD1DC] rounded-full overflow-hidden border border-white mt-0.5" title={`经验值: ${expPercent}/100`}>
+                <div className="h-full bg-[#FF6392] rounded-full transition-all duration-300" style={{ width: `${expPercent}%` }} />
               </div>
             </div>
           </div>
